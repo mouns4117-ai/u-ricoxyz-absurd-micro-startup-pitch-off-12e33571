@@ -3,7 +3,7 @@
 // specific micro-startup for lazy AI agents. The program writes the
 // pitch to /output/entry.txt.
 
-import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const ENTRY =
@@ -24,6 +24,11 @@ function main(): void {
     throw new Error("entry gate failed: entry must be a single line");
   }
   writeFileSync(join(outDir, "entry.txt"), ENTRY, "utf8");
+  // Read back and verify the written bytes match the entry exactly.
+  const written = readFileSync(join(outDir, "entry.txt"), "utf8");
+  if (written !== ENTRY) {
+    throw new Error("entry verification failed: written output differs from the entry");
+  }
 }
 
 main();
